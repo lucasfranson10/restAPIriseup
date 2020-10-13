@@ -15,6 +15,7 @@ use App\Application\Models\User;
 return function (App $app) {
     $container = $app->getContainer();    
     Bootstrap::load($container);
+    $app->addBodyParsingMiddleware();
     
     
 
@@ -38,17 +39,32 @@ return function (App $app) {
 
     //store
     $app->post('/user', function (Request $request, Response $response){
-        User::create();
-        $response->getbody()->write(json_encode(User::all()->toArray()));         
+        $data = $request->getParsedBody();
+        $user = User::create([
+            'user_name' => $data['user_name'],
+            'user_email' => $data['user_email'],
+        ]);
+        
+        !$user ? $response->getbody()->write("0") : $response->getbody()->write("1");
+
         return $response->withHeader(
             'Content-Type',
             'application/json'
         );
+       
     }); 
 
     //update
-    $app->put('/user/{num}', function (Request $request, Response $response,$args){
-        $response->getbody()->write(json_encode(User::all()->toArray()));         
+    $app->put('/user/{num}', function (Request $request, Response $response, $args) : Response {
+        $data = $request->getParsedBody();        
+
+        $user = User::where('user_id', $args)->update([
+            'user_name' => $data['user_name'],
+            'user_email' => $data['user_email'],
+        ]);
+
+        !$user ? $response->getbody()->write("0") : $response->getbody()->write("1");
+       
         return $response->withHeader(
             'Content-Type',
             'application/json'
@@ -56,8 +72,8 @@ return function (App $app) {
     }); 
 
     //delete
-    $app->delete('/user/{num}/delete', function (Request $request, Response $response){
-        $response->getbody()->write(json_encode(User::all()->toArray()));         
+    $app->delete('/user/{num}/delete', function (Request $request, Response $response,$args){
+        $response->getbody()->write(json_encode(User::where('user_id', $args)->delete()));         
         return $response->withHeader(
             'Content-Type',
             'application/json'
@@ -66,21 +82,3 @@ return function (App $app) {
 
 };
 
-
-
-/**
- *  $app->get('/user', function (Request $request, Response $response){
-        $response->getbody()->write(json_encode(User::all()->toArray()));         
-        return $response->withHeader(
-            'Content-Type',
-            'application/json'
-        );
-    });
-    
-     User::create();
-        $response->getbody()->write(json_encode(User::all()->toArray()));         
-        return $response->withHeader(
-            'Content-Type',
-            'application/json'
-        );
- */
