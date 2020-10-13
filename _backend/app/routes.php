@@ -38,6 +38,7 @@ return function (App $app) {
 
     //store
     $app->post('/user', function (Request $request, Response $response){
+        User::create();
         $response->getbody()->write(json_encode(User::all()->toArray()));         
         return $response->withHeader(
             'Content-Type',
@@ -61,7 +62,7 @@ return function (App $app) {
             'Content-Type',
             'application/json'
         );
-    }); 
+    });
 
 };
 
@@ -74,5 +75,12 @@ return function (App $app) {
             'Content-Type',
             'application/json'
         );
-    }); 
+    });
+    
+     User::create();
+        $response->getbody()->write(json_encode(User::all()->toArray()));         
+        return $response->withHeader(
+            'Content-Type',
+            'application/json'
+        );
  */
