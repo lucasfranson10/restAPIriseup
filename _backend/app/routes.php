@@ -1,12 +1,9 @@
 <?php
 declare(strict_types=1);
 
-use App\Application\Actions\User\ListUsersAction;
-use App\Application\Actions\User\ViewUserAction;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
-use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 use App\Application\Models\Bootstrap;
 use App\Application\Models\User;
@@ -43,6 +40,10 @@ return function (App $app) {
         $user = User::create([
             'user_name' => $data['user_name'],
             'user_email' => $data['user_email'],
+            'user_prof' => $data['user_prof'],
+            'user_exp' => $data['user_exp'],
+            'user_phone' => $data['user_phone'],
+            'user_loc' => $data['user_loc'],    
         ]);
         
         !$user ? $response->getbody()->write("0") : $response->getbody()->write("1");
@@ -61,6 +62,10 @@ return function (App $app) {
         $user = User::where('user_id', $args)->update([
             'user_name' => $data['user_name'],
             'user_email' => $data['user_email'],
+            'user_prof' => $data['user_prof'],
+            'user_exp' => $data['user_exp'],
+            'user_phone' => $data['user_phone'],
+            'user_loc' => $data['user_loc'],    
         ]);
 
         !$user ? $response->getbody()->write("0") : $response->getbody()->write("1");

@@ -40,3 +40,9 @@ composer test
 ```
 
 That's it! Now go build something cool.
+
+
+After finish in the methods run the next command:
+
+php vendor/bin/phinx migrate -c config-phinx.php
+By last, use the POST route /create and the parameters name, password and email in the request body with type URLencoded form data to create a new user.
