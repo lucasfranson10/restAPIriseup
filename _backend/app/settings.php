@@ -23,7 +23,8 @@ return function (ContainerBuilder $containerBuilder) {
                 'charset'   => 'utf8',
                 'collation' => 'utf8_unicode_ci',
                 'prefix'    => '',
-            ]
+            ],
+            'upload_directory' =>  __DIR__ . '/uploads',
         ],
     ]);
 };

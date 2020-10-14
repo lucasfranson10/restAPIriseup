@@ -11,7 +11,7 @@ final class CreateUsersTable extends Migration
             // Auto-increment id
             $table->increments('user_id');
             $table->string('user_name',50);
-            $table->string('user_email',50)->unique();
+            $table->string('user_email',50)/* ->unique() */;
             $table->string('user_prof',50);
             $table->string('user_exp',50);
             $table->string('user_phone',50);
