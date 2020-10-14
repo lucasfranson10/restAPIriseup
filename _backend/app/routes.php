@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\UploadedFileFactoryInterface as UploadedFile;
+use Slim\Psr7\Factory\StreamFactory as Stream;
+//use Psr\Http\Message\StreamFactoryInterface as Stream;
 use Slim\App;
 
 use App\Application\Models\Bootstrap;
@@ -16,6 +17,15 @@ return function (App $app) {
     Bootstrap::load($container);
     $app->addBodyParsingMiddleware();
     
+    $app->get('/uploads/{string}', function (Request $request, Response $response, $args){
+        
+        $query = User::where('user_avatar', '/uploads/' . $args['string'])->get(); 
+        
+        if($query){
+            return $response->withHeader('Content-Type', 'image/png')
+            ->withBody((new Stream())->createStreamFromFile(__DIR__ .'/uploads/' . $args['string']));
+        }       
+    }); 
     
 
     //index
@@ -55,7 +65,7 @@ return function (App $app) {
 
         $data = $request->getParsedBody();
         $user = User::create([
-            'user_avatar' => "$directory/$filename",
+            'user_avatar' => "/uploads/$filename",
             'user_name' => $data['user_name'],
             'user_email' => $data['user_email'],
             'user_prof' => $data['user_prof'],
