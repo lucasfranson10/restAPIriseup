@@ -13,9 +13,10 @@ use App\Application\Models\User;
 
 return function (App $app) {
     $container = $app->getContainer(); 
+    $app->addBodyParsingMiddleware();
     $path = $container->get('settings')['upload_directory'];
     Bootstrap::load($container);
-    $app->addBodyParsingMiddleware();
+    
     
     $app->get('/uploads/{string}', function (Request $request, Response $response, $args){
         
@@ -48,45 +49,36 @@ return function (App $app) {
 
     //store
     $app->post('/user', function (Request $request, Response $response) use ($path){
-
         $directory = $path;
-        $filename = NULL;
         $uploadedFiles = $request->getUploadedFiles();
-
-        if($uploadedFiles){
-            $avatar = $uploadedFiles['user_avatar'];
-
-
-            if ($avatar->getError() === UPLOAD_ERR_OK) {
-                $filename = moveUploadedFile($directory, $avatar);
-            }
-    
+        $avatar = $uploadedFiles['user_avatar'];
+        
+        if ($avatar->getError() === UPLOAD_ERR_OK ) {
+            if(!empty($avatar)) $filename = moveUploadedFile($directory, $avatar);
         }
-
+        
         $data = $request->getParsedBody();
         $user = User::create([
-            'user_avatar' => "/uploads/$filename",
-            'user_name' => $data['user_name'],
-            'user_email' => $data['user_email'],
-            'user_prof' => $data['user_prof'],
-            'user_exp' => $data['user_exp'],
-            'user_phone' => $data['user_phone'],
-            'user_loc' => $data['user_loc'],    
-        ]);
-        
+                                'user_avatar' => "/uploads/$filename",
+                                'user_name' => $data['user_name'],
+                                'user_email' => $data['user_email'],
+                                'user_prof' => $data['user_prof'],
+                                'user_exp' => $data['user_exp'],
+                                'user_phone' => $data['user_phone'],
+                                'user_loc' => $data['user_loc'], 
+                            ]);
         !$user ? $response->getbody()->write("0") : $response->getbody()->write("1");
-
+        
         return $response->withHeader(
-            'Content-Type',
-            'application/json'
-        ); 
-       
+                                    'Content-Type',
+                                    'application/json'
+                                    ); 
     }); 
+    
 
     //update
-    $app->put('/user/{num}', function (Request $request, Response $response, $args) : Response {
+    $app->put('/user/{num}', function (Request $request, Response $response, $args) use ($path) : Response {
         $data = $request->getParsedBody();        
-
         $user = User::where('user_id', $args)->update([
             'user_name' => $data['user_name'],
             'user_email' => $data['user_email'],
@@ -106,6 +98,10 @@ return function (App $app) {
 
     //delete
     $app->delete('/user/{num}/delete', function (Request $request, Response $response,$args){
+        $user = User::find($args)->toArray();
+        if(file_exists(__DIR__ .  $user[0]['user_avatar']))
+            unlink(__DIR__ .  $user[0]['user_avatar']);
+               
         $response->getbody()->write(json_encode(User::where('user_id', $args)->delete()));         
         return $response->withHeader(
             'Content-Type',
