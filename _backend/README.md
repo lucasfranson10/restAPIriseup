@@ -41,8 +41,21 @@ composer test
 
 That's it! Now go build something cool.
 
+## To use this app
 
-After finish in the methods run the next command:
+For the application to work, you must edit the Migration.php file, which can be found in the db folder. This PHP file must be configured with your database entries.
+
+set to the config-phinx.php
+
+After finish you have to run the next command:
 
 php vendor/bin/phinx migrate -c config-phinx.php
-By last, use the POST route /create and the parameters name, password and email in the request body with type URLencoded form data to create a new user.
+
+That command will set the table for your database.
+
+In App/settings.php you have to set the database too.
+
+To run the server run:
+
+ php -S 0.0.0.0:8081 -t public public/index.php
+
